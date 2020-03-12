@@ -1,37 +1,26 @@
 (function () {
     //#region 
-    let mainGridLineColor = 0xffffff;
-    let secGridLineColor = 0x00000;
+    let scene, camera, renderer;
+    let leftCube, rightCube;
+    let ambientLight, pointLight1, spotLight, directionalLight;
+    let lightposition = [7, 7, 7];
     let isDragged = false;
     let draggedObject;
-    let scene, camera, renderer;
     let grid, axis;
-    let leftCube, rightCube, lightCube;
     let leftWall, rightWall, backWall, floor;
     let objects = [];
     let orbitControls, controls;
-    let ambientLight, pointLight1, spotLight, directionalLight;
-    let lightposition = [5, 5, 5];
-    let loader, car, loader2, monster;
+    let loader, car, loader2, monster, lightLoader, light;
     let skyboxGeometry, skybox;
     let effect;
     let animationClips, mixer;
     let mousepos;
     let floorSize = [12, 12];
-    //#endregion
-
-
-
-
-
-
-
 
     let deltaTime = 0;
     let previousTime = 0;
 
     function init() {
-
         //1-Scene
         scene = new THREE.Scene();
         //2-Camera
@@ -51,7 +40,10 @@
         renderer.shadowMap.enabeled = true;
         renderer.shadowMap.type = THREE.BasicShadowMap;
         document.body.appendChild(renderer.domElement); //append canvas tag to html
+
         //#region Axis and GridHelper
+        let mainGridLineColor = 0xffffff;
+        let secGridLineColor = 0x00000;
         grid = new THREE.GridHelper(20, 20, mainGridLineColor, secGridLineColor);
         axis = new THREE.AxesHelper(10); //lengthh of axis
         scene.add(grid);
@@ -59,18 +51,16 @@
         //#endregion
 
         //#region Creating Cubes
-        leftCube = new Cube(1, scene, [-2, 0.25, 0], [0.5, 0.5, 0.5], 0xff3300, true);
+        leftCube = new Cube(1, scene, [-2, 0.25, 0], [0.5, 0.5, 0.5], 0x00ff00, true);
         leftCube.create();
         objects.push(leftCube.mesh);
         //right cube
         rightCube = new Cube(2, scene, [2, 0.25, 0], [0.5, 0.5, 0.5], 0xff0000, true);
         rightCube.create();
-
-        lightCube = new Cube(3, scene, lightposition, [0.5, 0.5, 0.5], 0xffffff, true);
-        lightCube.create();
         objects.push(rightCube.mesh);
         //#endregion 
         //#region Lights
+
 
         ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
         scene.add(ambientLight);
@@ -93,35 +83,10 @@
         //#endregion
 
         //#region Importing model
-        loader = new THREE.GLTFLoader();
-        loader.load("scene.gltf", (gltf) => {
-            car = gltf.scene.children[0];
-            car.scale.set(0.01, 0.01, 0.01);
-            car.position.set(0, 0, 2);
-            car.rotation.set(-Math.PI / 2, 0, -Math.PI / 10);
-            scene.add(gltf.scene);
-            console.log(car);
-            console.log(gltf);
-        });
-        let mesh;
-        loader2 = new THREE.GLTFLoader();
-        loader2.load("Monster.gltf", (gltf) => {
-            mesh = gltf;
-            monster = gltf.scene.children[0];
-            monster.scale.set(0.1, 0.1, 0.1);
-            monster.position.set(0, 0, -2);
-            // car.rotation.set(-Math.PI / 2, 0, -Math.PI / 10);
-            scene.add(gltf.scene);
-            animationClips = gltf.animations; // Array<THREE.AnimationClip> //array of animation clips
-            //console.log(animationClips);
-            // console.log(monster);
-            //gltf.scene; // THREE.Group
-            //gltf.scenes; // Array<THREE.Group>
-            //gltf.cameras; // Array<THREE.Camera>
-            //gltf.asset; // Object
 
-        });
-
+        car = new Model(scene, "scene.gltf", [0, 0, 2], [0.01, 0.01, 0.01], [-Math.PI / 2, 0, -Math.PI / 10]);
+        monster = new Model(scene, "Monster.gltf", [0, 0, -2], [0.1, 0.1, 0.1], [-Math.PI / 2, 0, -Math.PI / 10]);
+        light = new Model(scene, "flashLight/scene.gltf", lightposition, [0.008, 0.008, 0.008], [-Math.PI, 0, -1.25 * Math.PI]);
 
         // console.log("mixer");
         // mixer = new THREE.AnimationMixer(mesh);
@@ -199,7 +164,7 @@
 
         //#endregion
 
-        //orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+        orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
         controls = new THREE.DragControls(objects, camera, renderer.domElement);
         //renderer.render(scene, camera);
         effect.render(scene, camera)
@@ -213,8 +178,9 @@
         //lightposition[2] = directionalLight.position.z = 10 * Math.sin(previousTime);
         lightposition[0] = spotLight.position.x = 5 * Math.cos(previousTime);
         lightposition[2] = spotLight.position.z = 5 * Math.sin(previousTime);
-
-        lightCube.move(lightposition);
+        light.setPosition(lightposition);
+        //light.setRotation([-Math.PI / 2, lightposition[0], -1.25 * Math.PI]);//to be revisted
+        // lightCube.move(lightposition);
 
     }
 
@@ -236,14 +202,11 @@
     init();
     loop(0);
     let render = function () {
-        if (!isDragged) {
-            renderer.render(scene, camera);
-            orbitControls.dispose();
-        } else {
-            return;
-        }
+
+        renderer.render(scene, camera);
+
     }
-    // orbitControls.addEventListener("change", render);
+    orbitControls.addEventListener("change", render);
 
     // add event listener to highlight dragged objects
     document.addEventListener("mousemove", (event) => {
@@ -276,8 +239,7 @@
         let newCube = new Cube(3, scene, event.object.userData.position, event.object.userData.scale, event.object.userData.color, true);
         newCube.create();
         event.object.material.color.setHex(0xaaaaaa);
-        console.log(newCube);
-        objects.push(newCube.mesh);
+
         console.log("dragstart");
         console.log(event.object.userData.position);
         console.log(controls.getObjects());
@@ -304,6 +266,34 @@
     }
 
 })();
+
+function Model(scene, path, position, scale, rotation) {
+    this.path = path;
+    this.position = position;
+    this.scale = scale;
+    this.rotation = rotation;
+    this.model;
+    let loader = new THREE.GLTFLoader();
+    loader.load((path), (gltf) => {
+        this.model = gltf.scene.children[0];
+        this.model.position.set(this.position[0], this.position[1], this.position[2]);
+        this.model.scale.set(this.scale[0], this.scale[1], this.scale[2]);
+        this.model.rotation.set(this.rotation[0], this.rotation[1], this.rotation[2]);
+        scene.add(gltf.scene);
+    });
+    this.setPosition = function (position) {
+        this.position = position;
+        this.model.position.set(this.position[0], this.position[1], this.position[2])
+    };
+    this.setScale = function (scale) {
+        this.scale = scale;
+        this.model.scale.set(this.scale[0], this.scale[1], this.scale[2]);
+    };
+    this.setRotation = function (rotation) {
+        this.rotation = rotation;
+        this.model.rotation.set(this.rotation[0], this.rotation[1], this.rotation[2]);
+    };
+}
 
 function Cube(id, scene, position, scale, color, castShadow) {
 
