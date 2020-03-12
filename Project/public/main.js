@@ -191,7 +191,7 @@
         audioLoader.load('track.mp3', function (buffer) {
             sound.setBuffer(buffer);
             sound.setLoop(true);
-            sound.setVolume(0.01);
+            sound.setVolume(0.5);
             sound.play();
         });
         //#endregion
