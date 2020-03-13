@@ -3,7 +3,7 @@
     let scene, camera, renderer;
     let leftCube, rightCube;
     let ambientLight, pointLight1, spotLight, directionalLight;
-    let lightposition = [7, 7, 7];
+    let lightposition = [8, 8, 8];
     let isDragged = false;
     let draggedObject;
     let grid, axis;
@@ -85,38 +85,38 @@
 
         //#region Importing model
 
-        car = new Model(scene, "scene.gltf", [0, 0, 4], [0.01, 0.01, 0.01], [-Math.PI / 2, 0, -Math.PI / 10]);
-        monster = new Model(scene, "Monster.gltf", [0, 0, -2], [0.1, 0.1, 0.1], [-Math.PI / 2, 0, -Math.PI / 10]);
-        light = new Model(scene, "flashLight/scene.gltf", lightposition, [0.008, 0.008, 0.008], [-Math.PI, 0, -1.25 * Math.PI]);
-        bed = new Model(scene, "Bed/scene.gltf", [-8, 0.5, 0], [0.02, 0.02, 0.02], [-Math.PI / 2, 0, 0]);
-        sofa = new Model(scene, "Sofa/scene.gltf", [8.5, 0.5, -1], [1, 1, 1], [-Math.PI / 2, 0, -0.6 * Math.PI])
+        car = new Model(scene, "../resources/scene.gltf", [0, 0, 4], [0.01, 0.01, 0.01], [-Math.PI / 2, 0, -Math.PI / 10]);
+        monster = new Model(scene, "../resources/Monster.gltf", [0, 0, -2], [0.1, 0.1, 0.1], [-Math.PI / 2, 0, -Math.PI / 10]);
+        light = new Model(scene, "../resources/decorative_light_bulb/scene.gltf", lightposition, [0.8, 0.8, 0.8], [Math.PI / 2, 0, 0]);
+        bed = new Model(scene, "../resources/Bed/scene.gltf", [-8, 0.5, 0], [0.02, 0.02, 0.02], [-Math.PI / 2, 0, 0]);
+        sofa = new Model(scene, "../resources/Sofa/scene.gltf", [8.5, 0.5, -1], [1, 1, 1], [-Math.PI / 2, 0, -0.6 * Math.PI])
         //animatedModel(scene);
         //#endregion
         //#region Skybox
         skyboxGeometry = new THREE.BoxGeometry(1000, 1000, 1000);
         let skyBoxMaterials = [
             new THREE.MeshBasicMaterial({
-                map: new THREE.TextureLoader().load("skybox/right.jpg"),
+                map: new THREE.TextureLoader().load("../resources/skybox/right.jpg"),
                 side: THREE.DoubleSide
             }),
             new THREE.MeshBasicMaterial({
-                map: new THREE.TextureLoader().load("skybox/left.jpg"),
+                map: new THREE.TextureLoader().load("../resources/skybox/left.jpg"),
                 side: THREE.DoubleSide
             }),
             new THREE.MeshBasicMaterial({
-                map: new THREE.TextureLoader().load("skybox/top.jpg"),
+                map: new THREE.TextureLoader().load("../resources/skybox/top.jpg"),
                 side: THREE.DoubleSide
             }),
             new THREE.MeshBasicMaterial({
-                map: new THREE.TextureLoader().load("skybox/bottom.jpg"),
+                map: new THREE.TextureLoader().load("../resources/skybox/bottom.jpg"),
                 side: THREE.DoubleSide
             }),
             new THREE.MeshBasicMaterial({
-                map: new THREE.TextureLoader().load("skybox/front.jpg"),
+                map: new THREE.TextureLoader().load("../resources/skybox/front.jpg"),
                 side: THREE.DoubleSide
             }),
             new THREE.MeshBasicMaterial({
-                map: new THREE.TextureLoader().load("skybox/back.jpg"),
+                map: new THREE.TextureLoader().load("../resources/skybox/back.jpg"),
                 side: THREE.DoubleSide
             }),
         ];
@@ -126,17 +126,17 @@
         //#endregion
         //#region RoomWalls
         leftWall = new Wall(scene, [-floorSize[0] / 2, 2.5, 0], floorSize[0], wallHeight, [0, Math.PI / 2, 0], 0x0000ff, true);
-        leftWall.texture = new THREE.TextureLoader().load("rocks.jpg");
+        leftWall.texture = new THREE.TextureLoader().load("../resources/rocks.jpg");
         leftWall.create();
         backWall = new Wall(scene, [0, 2.5, -floorSize[1] / 2], floorSize[0], wallHeight, [0, 0, 0], 0x001f1f);
-        backWall.texture = new THREE.TextureLoader().load("rocks.jpg");
+        backWall.texture = new THREE.TextureLoader().load("../resources/rocks.jpg");
         backWall.create();
         rightWall = new Wall(scene, [floorSize[0] / 2, 2.5, 0], floorSize[0], wallHeight, [0, -0.5 * Math.PI, 0], 0x001f1f, true);
-        rightWall.texture = new THREE.TextureLoader().load("rocks.jpg");
+        rightWall.texture = new THREE.TextureLoader().load("../resources/rocks.jpg");
 
         rightWall.create();
         floor = new Wall(scene, [0, 0, 0], floorSize[0], floorSize[1], [-0.5 * Math.PI, 0, 0], 0xee927f, true);
-        floor.texture = new THREE.TextureLoader().load("porcelain.jpg");
+        floor.texture = new THREE.TextureLoader().load("../resources/porcelain.jpg");
         floor.create();
         //#endregion
         //#region Effects
@@ -153,7 +153,7 @@
         let sound = new THREE.Audio(listener);
 
         let audioLoader = new THREE.AudioLoader();
-        audioLoader.load('track.mp3', function (buffer) {
+        audioLoader.load('../resources/track.mp3', function (buffer) {
             sound.setBuffer(buffer);
             sound.setLoop(true);
             sound.setVolume(0.5);
@@ -179,7 +179,7 @@
         light.setPosition(lightposition);
         console.log(mixer);
         // mixer.update(previousTime);
-        //light.setRotation([-Math.PI / 2, lightposition[0], -1.25 * Math.PI]); //to be revisted
+
         // lightCube.move(lightposition);
         // duck.action.forEach(function (clip) {
         //     duck.mixer.clipAction(clip).play();
@@ -201,7 +201,7 @@
 
     function animatedModel(scene) {
         let loader = new THREE.GLTFLoader();
-        loader.load("fireAnimation/scene.gltf", (gltf) => {
+        loader.load("../resources/fireAnimation/scene.gltf", (gltf) => {
             const model = gltf.scene.children[0];
             console.log(gltf.animations);
             const animation = gltf.animations[0];
@@ -289,7 +289,7 @@ function Model(scene, path, position, scale, rotation) {
     let loader = new THREE.GLTFLoader();
 
     loader.load((path), (gltf) => {
-
+        console.log(gltf);
         this.model = gltf.scene.children[0];
         this.model.position.set(this.position[0], this.position[1], this.position[2]);
         this.model.scale.set(this.scale[0], this.scale[1], this.scale[2]);

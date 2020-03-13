@@ -1,12 +1,12 @@
 {
-  "name": "project",
+  "name": "webgl",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "/public/js/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "fathy",
+  "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1"
